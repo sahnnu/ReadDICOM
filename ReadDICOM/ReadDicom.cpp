@@ -3,6 +3,12 @@
 #include <dcmtk/dcmdata/dcitem.h>    // For DcmDataset
 #include <dcmtk/dcmdata/dcdeftag.h>   // For DICOM tag definitions
 #include <dcmtk/dcmdata/dcerror.h>    // For OFCondition
+#include <dcmtk/dcmimgle/dcmimage.h>   // For DicomImage
+#include <dcmtk/dcmjpeg/djdecode.h>    // JPEG support
+#include <dcmtk/dcmjpeg/djencode.h>
+#include <dcmtk/dcmjpeg/djrploss.h>    // For JPEG encoder
+#include <dcmtk/dcmimage/diregist.h>   // Image format registration (required for DicomImage)
+#include <dcmtk/dcmdata/dcrledrg.h>    // For RLE decompression
 
 int main(int argc, char* argv[])
 {
@@ -141,6 +147,27 @@ int main(int argc, char* argv[])
     } else {
         std::cerr << "Error: Could not find Image Height/Width" << std::endl;
     }
+
+
+     DicomImage dicomImage(dicomFile);
+    if (dicomImage.getStatus() == EIS_Normal) {
+        if (dicomImage.getWindowCount() > 0) {
+            dicomImage.setWindow(0); // Set to the first window if multiple windows are present
+        }
+
+        const char* outputFile = "D:\\Assignment\\Dicom2JPEG.jpeg";
+        if (dicomImage.writeJPEG(outputFile, 100, 90)) {
+            std::cout << "JPEG image saved to: " << outputFile << std::endl;
+        } else {
+            std::cerr << "Error: Failed to write JPEG image" << std::endl;
+        }
+    } else {
+        std::cerr << "Error: DICOM image is not normal (" 
+                  << DicomImage::getString(dicomImage.getStatus()) << ")" << std::endl;
+    }
+
+    // Clean up JPEG decompression
+    DJDecoderRegistration::cleanup();
 
     return 0;
 }
