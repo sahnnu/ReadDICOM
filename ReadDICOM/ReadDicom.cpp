@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    const char* filename = argv[1];
+    const char* filename = "D:\Assignment\ReadDICOM327.dcm";
 
     // Load the DICOM file
     DcmFileFormat fileformat;
