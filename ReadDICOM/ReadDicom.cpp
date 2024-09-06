@@ -132,6 +132,15 @@ int main(int argc, char* argv[])
     {
         std::cout << "Series Description: Not available" << std::endl;
     }
+    // Extract and print Image Height (Rows) and Width (Columns)
+    Uint16 rows, columns;
+    if (dataset->findAndGetUint16(DCM_Rows, rows).good() && 
+        dataset->findAndGetUint16(DCM_Columns, columns).good()) {
+        std::cout << "Image Height (Rows): " << rows << std::endl;
+        std::cout << "Image Width (Columns): " << columns << std::endl;
+    } else {
+        std::cerr << "Error: Could not find Image Height/Width" << std::endl;
+    }
 
     return 0;
 }
