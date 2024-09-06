@@ -1,71 +1,137 @@
-// TestDCMTK.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <dcmtk/dcmdata/dcfilefo.h>  // For DcmFileFormat
+#include <dcmtk/dcmdata/dcitem.h>    // For DcmDataset
+#include <dcmtk/dcmdata/dcdeftag.h>   // For DICOM tag definitions
+#include <dcmtk/dcmdata/dcerror.h>    // For OFCondition
 
-#include "dcmtk/config/osconfig.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmdata/libi2d/i2d.h"
-#include "dcmtk/dcmdata/libi2d/i2djpgs.h"
-#include "dcmtk/dcmdata/libi2d/i2dplsc.h"
-#include "dcmtk/dcmdata/dctk.h"
-
-using namespace std;
-
-
-void createDicomImage() {
-    char uid[100];
-    I2DImgSource* inputPlug = new I2DJpegSource();
-    I2DOutputPlug* outPlug = new I2DOutputPlugSC();
-    Image2Dcm i2d;
-    E_TransferSyntax writeXfer;
-    DcmDataset* resultDset = NULL;
-
-    inputPlug->setImageFile("test.jpg");
-    i2d.convert(inputPlug, outPlug, resultDset, writeXfer);
-    resultDset->putAndInsertString(DCM_PatientName, "Brandon Lara");
-    resultDset->putAndInsertString(DCM_SOPClassUID, UID_SecondaryCaptureImageStorage);
-    resultDset->putAndInsertString(DCM_SOPInstanceUID, dcmGenerateUniqueIdentifier(uid, SITE_INSTANCE_UID_ROOT));
-    DcmFileFormat dcmff(resultDset);
-    dcmff.saveFile("test.dcm", writeXfer, EET_ExplicitLength, EGL_recalcGL, EPD_noChange, OFstatic_cast(Uint32, 0), OFstatic_cast(Uint32, 0), EWM_fileformat);
-}
-
-void loadDicom() {
-    DcmFileFormat fileformat;
-    OFCondition status = fileformat.loadFile("test.dcm");
-    if (status.good())
+int main(int argc, char* argv[])
+{
+    if (argc < 2)
     {
-        OFString patientName;
-        if (fileformat.getDataset()->findAndGetOFString(DCM_PatientName, patientName).good())
-        {
-            cout << "Patient's Name: " << patientName << endl;
-        }
-        else
-            cerr << "Error: cannot access Patient's Name!" << endl;
+        std::cerr << "Usage: " << argv[0] << " <DICOM file>" << std::endl;
+        return 1;
+    }
+
+    const char* filename = argv[1];
+
+    // Load the DICOM file
+    DcmFileFormat fileformat;
+    OFCondition status = fileformat.loadFile(filename);
+
+    if (!status.good())
+    {
+        std::cerr << "Error: " << status.text() << std::endl;
+        return 1;
+    }
+
+    // Get the dataset from the file
+    DcmDataset* dataset = fileformat.getDataset();
+
+    // Print patient information
+    OFString patientName;
+    OFString patientID;
+    OFString patientBirthDate;
+    OFString patientSex;
+
+    if (dataset->findAndGetOFString(DCM_PatientName, patientName).good())
+    {
+        std::cout << "Patient Name: " << patientName << std::endl;
     }
     else
-        cerr << "Error: cannot read DICOM file (" << status.text() << ")" << endl;
+    {
+        std::cout << "Patient Name: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_PatientID, patientID).good())
+    {
+        std::cout << "Patient ID: " << patientID << std::endl;
+    }
+    else
+    {
+        std::cout << "Patient ID: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_PatientBirthDate, patientBirthDate).good())
+    {
+        std::cout << "Patient Birth Date: " << patientBirthDate << std::endl;
+    }
+    else
+    {
+        std::cout << "Patient Birth Date: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_PatientSex, patientSex).good())
+    {
+        std::cout << "Patient Sex: " << patientSex << std::endl;
+    }
+    else
+    {
+        std::cout << "Patient Sex: Not available" << std::endl;
+    }
+
+    // Print study information
+    OFString studyDate;
+    OFString studyTime;
+    OFString studyDescription;
+
+    if (dataset->findAndGetOFString(DCM_StudyDate, studyDate).good())
+    {
+        std::cout << "Study Date: " << studyDate << std::endl;
+    }
+    else
+    {
+        std::cout << "Study Date: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_StudyTime, studyTime).good())
+    {
+        std::cout << "Study Time: " << studyTime << std::endl;
+    }
+    else
+    {
+        std::cout << "Study Time: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_StudyDescription, studyDescription).good())
+    {
+        std::cout << "Study Description: " << studyDescription << std::endl;
+    }
+    else
+    {
+        std::cout << "Study Description: Not available" << std::endl;
+    }
+
+    // Print series information
+    OFString seriesNumber;
+    OFString modality;
+    OFString seriesDescription;
+
+    if (dataset->findAndGetOFString(DCM_SeriesNumber, seriesNumber).good())
+    {
+        std::cout << "Series Number: " << seriesNumber << std::endl;
+    }
+    else
+    {
+        std::cout << "Series Number: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_Modality, modality).good())
+    {
+        std::cout << "Modality: " << modality << std::endl;
+    }
+    else
+    {
+        std::cout << "Modality: Not available" << std::endl;
+    }
+
+    if (dataset->findAndGetOFString(DCM_SeriesDescription, seriesDescription).good())
+    {
+        std::cout << "Series Description: " << seriesDescription << std::endl;
+    }
+    else
+    {
+        std::cout << "Series Description: Not available" << std::endl;
+    }
+
+    return 0;
 }
-
-int main()
-{
-
-    cout << "Hello World!\n";
-    createDicomImage();
-    loadDicom();
-
-}
-
-
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

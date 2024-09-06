@@ -104,11 +104,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\sahnn\Downloads\dcmtk-3.6.8\dcmdata;C:\Users\sahnn\Downloads\dcmtk-3.6.8\config\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\sahnn\Downloads\dcmtk-3.6.8\dcmtk-3.6.8\oflog\include;C:\Users\sahnn\Downloads\dcmtk-3.6.8\dcmtk-3.6.8\ofstd\include;C:\Users\sahnn\Downloads\dcmtk-3.6.8\oflog\include;C:\Users\sahnn\Downloads\dcmtk-3.6.8\ofstd\include;C:\Users\sahnn\Downloads\dcmtk-3.6.8\config\include;C:\Users\sahnn\Downloads\dcmtk-3.6.8\dcmtk-3.6.8\dcmdata\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>dcmtk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Assignment\ReadDICOM\DCMTKbin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
